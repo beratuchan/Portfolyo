@@ -4,13 +4,11 @@ import { Accordion, AccordionContent, AccordionPanel, AccordionTitle } from "flo
 export function SSS() {
   return (
     <Card className="col-span-3">
-                  <h5 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+                  <h5 className="text-2xl font-bold tracking-tight text-pink-500 dark:text-pink-500">
         Sık Sorulan Sorular
       </h5>
     <Accordion>
-
-
-      <AccordionPanel>
+      <AccordionPanel >
         <AccordionTitle>Yazılım geliştirme sürecinizde hangi metodolojileri kullanıyorsunuz?</AccordionTitle>
         <AccordionContent>
           <p className="text-gray-500 dark:text-gray-400">

@@ -48,12 +48,26 @@ export function Projeler() {
   ];
 
   return (
-      <Card >
-        <h5 className="text-2xl text-center font-bold tracking-tight text-pink-500  dark:text-white">
+      <Card dark:bg-gray-900>
+        <h5 className="text-2xl text-center font-bold tracking-tight text-pink-500 dark:text-pink-500">
           Dahil Olduğu Projeler:
         </h5>
 
-        <Carousel className="aspect-square sm:aspect-[4/3] xl:aspect-[16/9]">
+        <Carousel className="aspect-square sm:aspect-[4/3] xl:aspect-[16/9]"         leftControl={
+          <button className="absolute left-2 top-1/2 transform -translate-y-1/2 z-10 bg-pink-500 dark:bg-pink-500 hover:bg-white dark:hover:bg-gray-700 rounded-full p-2 shadow-lg transition-all duration-200">
+            <svg className="w-6 h-6 text-gray-800 dark:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+        }
+        rightControl={
+          <button className="absolute right-2 top-1/2 transform -translate-y-1/2 z-10 bg-pink-500 dark:bg-pink-500 hover:bg-white dark:hover:bg-gray-700 rounded-full p-2 shadow-lg transition-all duration-200">
+            <svg className="w-6 h-6 text-gray-800 dark:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        }
+        indicators={false}>
           {projects.map((project, index) => (
             <div key={index} className="relative h-full flex justify-center items-center">
               <img src={project.image} alt={project.title}/>

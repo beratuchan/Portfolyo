@@ -2,7 +2,7 @@ import { Avatar } from "flowbite-react";
 
 export const Baslik = () => {
   return (
-    <header className="relative gradient-background bottom-7">
+    <header className="relative gradient-background">
       {
     }
       <style>

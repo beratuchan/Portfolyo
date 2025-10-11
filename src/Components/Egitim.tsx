@@ -11,8 +11,8 @@ import { Card } from "flowbite-react";
 export function Egitim() {
   return (
     <div className="flex stretch">
-    <Card  className="bg-gray-100">
-      <h5 className="text-2xl font-bold tracking-tight text-pink-500 dark:text-white ">
+    <Card  className="bg-gray-100 dark:bg-gray-700">
+      <h5 className="text-2xl font-bold tracking-tight text-pink-500 dark:text-pink-500 ">
         Eğitim:
       </h5>
       <Timeline>
@@ -34,8 +34,8 @@ export function Egitim() {
       </Timeline>
       </Card>
 
-      <Card className="bg-gray-200">
-      <h5 className="text-2xl font-bold tracking-tight  text-pink-500 dark:text-white ">
+      <Card className="bg-gray-200 dark:bg-gray-600">
+      <h5 className="text-2xl font-bold tracking-tight  text-pink-500 dark:text-pink-500 ">
         İş Deneyimi:
       </h5>
       <Timeline>

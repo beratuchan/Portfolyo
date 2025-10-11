@@ -2,8 +2,8 @@ import { Card, List, ListItem } from "flowbite-react";
 
 export function Iletisim() {
   return (
-    <Card className="bg-gray-50">
-      <h5 className="text-2xl font-bold tracking-tight  text-pink-500  dark:text-white mb-6 text-center">
+    <Card className="bg-gray-50 dark: dark:bg-gray-700">
+      <h5 className="text-2xl font-bold tracking-tight  text-pink-500 dark:text-pink-500 mb-6 text-center">
         İletişim
       </h5>
       

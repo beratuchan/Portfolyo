@@ -7,7 +7,7 @@ import { Card } from "flowbite-react";
 
 export function Alinti() {
   return (
-    <Card >
+    <Card className="dark:bg-gray-800">
      
     <figure className="mx-auto max-w-screen-md text-center">
       <svg

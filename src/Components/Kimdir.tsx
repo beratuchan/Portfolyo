@@ -11,7 +11,7 @@ export const Kimdir = () => {
     <Card className=" py-8 px-10 text-center shadow-lg dark:bg-gray-800 dark:text-gray-100">
       <Accordion>
           <AccordionPanel>
-            <AccordionTitle><h5 className="text-3xl font-bold tracking-tight  text-pink-500 dark:text-white mb-6 text-center">KİMDİR?</h5></AccordionTitle>
+            <AccordionTitle><h5 className="text-3xl font-bold tracking-tight  text-pink-500 dark:text-pink-500 mb-6 text-center">KİMDİR?</h5></AccordionTitle>
             <AccordionContent>
       <p className="text-lg text-gray-700 dark:text-gray-300  mx-auto">
         1995 yılında İstanbul'da doğan yazılım mühendisi ve yapay zekâ uzmanı, teknoloji

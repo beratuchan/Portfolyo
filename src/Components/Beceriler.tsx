@@ -2,8 +2,8 @@ import { Card, Rating, RatingStar } from "flowbite-react";
 
 export function Beceriler() {
   return (
-    <Card className="bg-gray-200">
-      <h5 className="text-2xl font-bold tracking-tight text-pink-500  dark:text-white mb-6">
+    <Card className="bg-gray-200 dark:bg-gray-600">
+      <h5 className="text-2xl font-bold tracking-tight text-pink-500  dark:text-pink-500 mb-6">
         Uzmanlık Alanları:
       </h5>
       
@@ -123,7 +123,7 @@ export function Beceriler() {
 
       
       <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-600">
-              <h5 className="text-2xl font-bold tracking-tight text-pink-500 dark:text-white ">
+              <h5 className="text-2xl font-bold tracking-tight text-pink-500 dark:text-pink-500 ">
         Sertifikalar & Özel Yetkinlikler:
       </h5>
         <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
