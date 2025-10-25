@@ -56,14 +56,18 @@ export const Paginasyon = ({
 
   // Gösterilecek sayfa numaralarını hesapla
   const sayfaNumaralari = [];
-  let baslangicSayfa = Math.max(1, mevcutSayfa - Math.floor(maxGosterilenSayfa / 2));
-  let bitisSayfa = Math.min(toplamSayfa, baslangicSayfa + maxGosterilenSayfa - 1);
   
+  // Değişkenleri const olarak tanımla çünkü yeniden atanmıyorlar
+  const baslangicSayfa = Math.max(1, mevcutSayfa - Math.floor(maxGosterilenSayfa / 2));
+  const bitisSayfa = Math.min(toplamSayfa, baslangicSayfa + maxGosterilenSayfa - 1);
+  
+  // Eğer sayfa sayısı yetersizse, başlangıç sayfasını ayarla
+  let adjustedBaslangicSayfa = baslangicSayfa;
   if (bitisSayfa - baslangicSayfa + 1 < maxGosterilenSayfa) {
-    baslangicSayfa = Math.max(1, bitisSayfa - maxGosterilenSayfa + 1);
+    adjustedBaslangicSayfa = Math.max(1, bitisSayfa - maxGosterilenSayfa + 1);
   }
   
-  for (let i = baslangicSayfa; i <= bitisSayfa; i++) {
+  for (let i = adjustedBaslangicSayfa; i <= bitisSayfa; i++) {
     sayfaNumaralari.push(i);
   }
 
@@ -98,7 +102,7 @@ export const Paginasyon = ({
           </li>
 
           {/* İlk Sayfa ve Üç Nokta */}
-          {baslangicSayfa > 1 && (
+          {adjustedBaslangicSayfa > 1 && (
             <>
               <li>
                 <button
@@ -108,7 +112,7 @@ export const Paginasyon = ({
                   1
                 </button>
               </li>
-              {baslangicSayfa > 2 && (
+              {adjustedBaslangicSayfa > 2 && (
                 <li>
                   <span className="flex items-center justify-center px-2 h-10 text-gray-500 bg-white border border-gray-300 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400">
                     ...

@@ -1,6 +1,6 @@
 // Components/DevlogCarousel.tsx
 import { Atlikarinca } from "./Atlikarinca";
-import { devlogData } from "./DevlogDetay";
+import { devlogData } from "../data/devlogdata"; 
 
 interface DevlogCarouselProps {
   maxItems?: number;

@@ -39,7 +39,8 @@ export const Proje = (props: ProjeProps) => {
 
   // Kartın görünürlük durumunu kontrol et
   useEffect(() => {
-    if (!cardRef.current) return;
+    const currentCardRef = cardRef.current; // Ref'i bir değişkene ata
+    if (!currentCardRef) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -54,14 +55,13 @@ export const Proje = (props: ProjeProps) => {
       }
     );
 
-    observer.observe(cardRef.current);
+    observer.observe(currentCardRef);
 
     return () => {
-      if (cardRef.current) {
-        observer.unobserve(cardRef.current);
-      }
+      // Cleanup fonksiyonunda değişkeni kullan
+      observer.unobserve(currentCardRef);
     };
-  }, []);
+  }, []); // Bu effect sadece mount/unmount'ta çalışsın
 
   // Hover timer'ı temizle
   useEffect(() => {

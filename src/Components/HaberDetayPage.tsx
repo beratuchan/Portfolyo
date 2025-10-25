@@ -1,7 +1,7 @@
 // components/HaberDetayPage.tsx
 import { Card } from "flowbite-react";
 import { useParams, Navigate } from "react-router-dom";
-import { haberler } from "./HaberPage";
+import { haberler } from "../data/haberData";
 
 const HaberDetayPage = () => {
   const { kupurNo } = useParams<{ kupurNo: string }>();
