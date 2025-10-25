@@ -1,0 +1,1002 @@
+
+
+// === C:/Users/BERAT/Desktop/Portfolyo-main/src/Components\Beceriler.tsx ===
+
+import {Rating, RatingStar } from "flowbite-react";
+
+export interface BecerilerProps {
+  skills: {
+    name: string;
+    rating: number;
+    displayRating: string;
+  }[];
+  maintitle: string;
+}
+
+const renderStars = (rating: number) => {
+  const stars = [];
+  const fullStars = Math.floor(rating);
+  const hasHalfStar = rating % 1 >= 0.5;
+
+  for (let i = 0; i < 5; i++) {
+    if (i < fullStars) {
+      stars.push(<RatingStar key={i} filled={true} />);
+    } else if (i === fullStars && hasHalfStar) {
+      stars.push(<RatingStar key={i} filled={true} />);
+    } else {
+      stars.push(<RatingStar key={i} filled={false} />);
+    }
+  }
+  return stars;
+};
+
+export function Beceriler(props:BecerilerProps) {
+  const {skills, maintitle} = props
+  return (
+    <div>
+      <h5 className="text-2xl font-bold tracking-tight text-pink-500 dark:text-pink-500 mb-6">
+        {maintitle}
+      </h5>
+      
+      <div className="space-y-4">
+        {skills.map((skill, index) => (
+          <div key={index}>
+            <div className="flex justify-between items-center mb-1">
+              <span className="text-sm font-medium text-gray-900 dark:text-white">
+                {skill.name}
+              </span>
+              <span className="text-sm font-bold text-blue-600 dark:text-blue-400">
+                {skill.displayRating}
+              </span>
+            </div>
+            <Rating>
+              {renderStars(skill.rating)}
+            </Rating>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// === C:/Users/BERAT/Desktop/Portfolyo-main/src/Components\Haber.tsx ===
+
+import { Card } from "flowbite-react"
+import { useState, useRef, useEffect } from "react"
+import { Link } from "react-router-dom"
+
+// Props interface'ini tanımlama
+export interface HaberProps {
+  kupurNo: number;
+  gazeteAdi: string;
+  tarih: string;
+  sayfa: string;
+  bolum: string;
+  baslik: string;
+  altBaslik: string;
+  icerik: string;
+  resimUrl: string;
+}
+
+export const Haber = (props: HaberProps) => {
+  const [isHovered, setIsHovered] = useState(false)
+  const [isOverflow, setIsOverflow] = useState(false)
+  const [showReadMore, setShowReadMore] = useState(false)
+  const contentRef = useRef<HTMLDivElement>(null)
+  const hoverTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const { 
+    kupurNo, 
+    gazeteAdi, 
+    tarih, 
+    sayfa, 
+    bolum, 
+    baslik, 
+    altBaslik, 
+    icerik, 
+    resimUrl 
+  } = props
+
+  // İçerik taşıp taşmadığını kontrol et
+  useEffect(() => {
+    if (contentRef.current) {
+      const isContentOverflowing = contentRef.current.scrollHeight > contentRef.current.clientHeight
+      setIsOverflow(isContentOverflowing)
+    }
+  }, [icerik])
+
+  // Hover timer'ı temizle
+  useEffect(() => {
+    return () => {
+      if (hoverTimerRef.current) {
+        clearTimeout(hoverTimerRef.current)
+      }
+    }
+  }, [])
+
+  const handleMouseEnter = () => {
+    setIsHovered(true)
+    if (isOverflow) {
+      hoverTimerRef.current = setTimeout(() => {
+        setShowReadMore(true)
+      }, 200)
+    }
+  }
+
+  const handleMouseLeave = () => {
+    setIsHovered(false)
+    setShowReadMore(false)
+    if (hoverTimerRef.current) {
+      clearTimeout(hoverTimerRef.current)
+      hoverTimerRef.current = null
+    }
+  }
+
+  return (
+    <Link to={`/haber/${kupurNo}`} className="block no-underline">
+      <Card 
+        className="bg-gray-50 dark:bg-gray-700 h-[500px] overflow-hidden relative transition-all duration-300 cursor-pointer hover:shadow-lg"
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+      >
+        <div className="p-4 h-full overflow-hidden" ref={contentRef}>
+          {/* Gazete Küpürü Başlığı */}
+          <div className="mb-4 border-b border-gray-300 dark:border-gray-600 pb-2">
+            <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200">
+              Gazete Küpürü {kupurNo}: {bolum}
+            </h3>
+            <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+              <span className="font-semibold">GAZETE ADI: {gazeteAdi}</span> 
+              <span className="mx-2">•</span>
+              <span className="font-semibold">TARİH: {tarih}</span>
+              <span className="mx-2">•</span>
+              <span className="font-semibold">SAYFA: {sayfa} | {bolum}</span>
+            </div>
+          </div>
+
+          {/* Resim - float left ile sarma etkisi */}
+          <div 
+            className={`float-left mr-4 mb-4 overflow-hidden rounded-lg transition-all duration-300 ${
+              isHovered ? 'w-60 h-48' : 'w-48 h-40'
+            }`}
+          >
+            <img
+              src={resimUrl}
+              alt="Haber görseli"
+              className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+            />
+          </div>
+          
+          {/* Haber Başlıkları */}
+          <div className="mb-3">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white leading-tight">
+              {baslik}
+            </h2>
+            <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300 italic mt-2 leading-tight">
+              {altBaslik}
+            </h3>
+          </div>
+
+          {/* Haber İçeriği */}
+          <div className="text-justify text-gray-700 dark:text-gray-300 leading-relaxed">
+            {icerik.split('\n\n').map((paragraf, index) => (
+              <p key={index} className="mb-3">
+                {paragraf}
+              </p>
+            ))}
+          </div>
+        </div>
+
+        {/* Gradient overlay - içeriğin kesildiğini belli etmek için */}
+        {!isHovered && isOverflow && (
+          <div className="absolute bottom-0 left-0 w-full h-16 bg-gradient-to-t from-gray-50 to-transparent dark:from-gray-700 dark:to-transparent pointer-events-none"></div>
+        )}
+
+        {/* Hover efekti - "Daha fazlasını oku" - Aşağıdan yukarıya kayarak */}
+        {showReadMore && (
+          <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-black via-black/70 to-transparent flex items-end justify-center transition-all duration-500 animate-slideUp">
+            <div className="text-white text-center p-6 mb-8 w-full">
+              <div className="text-2xl font-bold mb-3">📖</div>
+              <div className="text-xl font-semibold mb-2">Daha Fazlasını Oku</div>
+              <div className="text-sm opacity-90">Haberin tamamını görüntülemek için tıklayın</div>
+            </div>
+          </div>
+        )}
+      </Card>
+    </Link>
+  )
+}
+
+export default Haber
+
+// === C:/Users/BERAT/Desktop/Portfolyo-main/src/Components\HaberDetayPage.tsx ===
+
+import { Card } from "flowbite-react";
+import { useParams, Navigate } from "react-router-dom";
+import haberler from "./HomePage";
+import { type HaberProps } from "./Haber";
+
+const HaberDetayPage = () => {
+  const { haberId } = useParams<{ haberId: string }>();
+  
+  const haberlerData = (haberler as unknown as HaberProps[]);
+  
+  // Haber ID'sine göre haberi bul
+  const haber: HaberProps | undefined = haberlerData.find(
+    (h) => h.kupurNo === parseInt(haberId || "0")
+  );
+
+  // Eğer haber bulunamazsa, 404 sayfasına yönlendir
+  if (!haber) {
+    return <Navigate to="/404" replace />;
+  }
+
+  const { 
+    kupurNo, 
+    gazeteAdi, 
+    tarih, 
+    sayfa, 
+    bolum, 
+    baslik, 
+    altBaslik, 
+    icerik, 
+    resimUrl 
+  } = haber;
+
+  return (
+    <div className="max-w-6xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-3 gap-8">
+      {/* Sol Sütun - Gazete Bilgileri */}
+      <div className="lg:col-span-1">
+        <Card className="h-fit">
+          <div className="space-y-4">
+            <div className="border-b pb-4">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{gazeteAdi}</h2>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">Kupür No: {kupurNo}</p>
+            </div>
+            
+            <div className="space-y-2 text-sm">
+              <div className="flex justify-between">
+                <span className="font-semibold text-gray-700 dark:text-gray-300">Tarih:</span>
+                <span className="text-gray-600 dark:text-gray-400">{tarih}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-semibold text-gray-700 dark:text-gray-300">Sayfa:</span>
+                <span className="text-gray-600 dark:text-gray-400">{sayfa}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-semibold text-gray-700 dark:text-gray-300">Bölüm:</span>
+                <span className="text-blue-600 font-medium">{bolum}</span>
+              </div>
+            </div>
+          </div>
+        </Card>
+      </div>
+
+      {/* Orta ve Sağ Sütun - İçerik */}
+      <div className="lg:col-span-2 space-y-6">
+        {/* Başlık Bölümü */}
+        <Card>
+          <div className="space-y-4">
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white leading-tight">
+              {baslik}
+            </h1>
+            <h2 className="text-xl text-gray-700 dark:text-gray-300 italic border-l-4 border-blue-500 pl-4">
+              {altBaslik}
+            </h2>
+          </div>
+        </Card>
+
+        {/* Resim ve İçerik */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Card className="h-fit">
+            <img 
+              src={resimUrl} 
+              alt="haber resmi" 
+              className="w-full h-64 object-cover rounded-lg"
+            />
+          </Card>
+          
+          <Card>
+            <div className="prose max-w-none dark:prose-invert">
+              {icerik.split('\n\n').map((paragraf, index) => (
+                <p key={index} className="mb-4 text-gray-700 dark:text-gray-300 leading-relaxed">
+                  {paragraf}
+                </p>
+              ))}
+            </div>
+          </Card>
+        </div>
+
+        {/* Ek Bilgiler */}
+        <Card className="bg-gray-50 dark:bg-gray-700">
+          <div className="text-center text-sm text-gray-600 dark:text-gray-400">
+            <p>{gazeteAdi} - {tarih} - Sayfa {sayfa}</p>
+            <p className="mt-2">Kupür No: {kupurNo} | Bölüm: {bolum}</p>
+          </div>
+        </Card>
+      </div>
+    </div>
+  );
+};
+
+export default HaberDetayPage;
+
+// === C:/Users/BERAT/Desktop/Portfolyo-main/src/Components\HaberPage.tsx ===
+
+import { StrictMode } from "react";
+import { Haber, type HaberProps } from "./Haber";
+
+export const haberler: HaberProps[] = [
+    {
+      kupurNo: 5,
+      gazeteAdi: "Gelecek Nesil Mühendisler",
+      tarih: "25 Ocak 2025",
+      sayfa: "4",
+      bolum: "Eğitim & Kariyer",
+      baslik: "Boğaziçi ve Koç'tan Gelen Vizyon: Eğitimle Şekillenen Bir Başarı Hikayesi",
+      altBaslik: "\"Yapay Zekâya Tutku, Problem Çözmeye Adanmışlık\": Genç Mühendis Yeni Başlayanlara Işık Tutuyor",
+      icerik: `Eğitim geçmişiyle de göz dolduran mühendis, Boğaziçi Üniversitesi Bilgisayar Mühendisliği'ndeki lisans eğitiminin ardından Koç Üniversitesi'nde Yapay Zekâ ve Veri Bilimi alanında yüksek lisans yaparak bilgi birikimini zirveye taşımış bir isim. Bu sağlam akademik temel, ona Doğal Dil İşleme (NLP) ve AI Model Deployment gibi alanlarda eşsiz bir bakış açısı kazandırmış.
+
+Yeni başlayan yazılımcılara yönelik samimi tavsiyeleriyle de ilham kaynağı oluyor:
+
+"Temel programlama prensiplerini iyi öğrenin - dil sadece bir araç. Problem çözme becerilerinizi geliştirin. Open source projelere katkıda bulunarak pratik yapın. Kod review süreçlerine dahil olun ve eleştirilere açık olun. Asla öğrenmeyi bırakmayın - bu sektörde durağanlık gerilemedir. Ve en önemlisi, tutkulu olduğunuz alanları bulun ve onlara odaklanın."
+
+Bu yaklaşım, onun ChatAssist'in Duygu Analizi Modülü gibi insan duygularını anlayan projelerde neden bu kadar başarılı olduğunu da açıklıyor. Eğitimi ve sürekli öğrenme tutkusu, her projesine derin bir anlayış ve yenilikçi bir çözüm getirmesini sağlıyor.`,
+      resimUrl: "https://images.pexels.com/photos/4145153/pexels-photo-4145153.jpeg?auto=compress&cs=tinysrgb&w=600"
+    },
+    {
+      kupurNo: 4,
+      gazeteAdi: "Dijital Dönüşüm Dergisi",
+      tarih: "08 Ağustos 2024",
+      sayfa: "7",
+      bolum: "Uzman Görüşü",
+      baslik: "Bulut ve YZ Uzmanı Sahada: AWS, Kubernetes, TensorFlow ile Liderlik",
+      altBaslik: "Sertifikasyonlar Yalnızca Kâğıt Değil, Projelerin Omurgası Oldu",
+      icerik: `Günümüzün rekabetçi teknoloji dünyasında, teorik bilginin pratikle buluştuğu noktada gerçek uzmanlık parlıyor. Bu yaklaşımın en iyi örneklerinden biri olan genç mühendis, sadece projeleriyle değil, aynı zamanda sahip olduğu prestijli sertifikasyonlarla da dikkat çekiyor.
+
+Kendisini "Bulut Bilişim Altyapısı" ve "AI Model Deployment & MLOps" alanlarında kanıtlayan mühendisin portföyünde "AWS Certified Solutions Architect - Professional", "Certified Kubernetes Administrator (CKA)" ve "TensorFlow Developer Certified" gibi kritik sertifikalar bulunuyor. Bu sertifikalar, yalnızca birer unvan olmanın ötesinde, mühendisin Microservices Architecture Design ve Cloud Native Development alanlarındaki derin bilgisinin birer tescili niteliğinde.
+
+"Sertifikasyonlar, özellikle dağıtık sistemler ve gerçek zamanlı veri işleme gibi karmaşık projelerde, güvenilirliğin ve teknik yeterliliğin bir göstergesi. Bu sayede sadece çözümler üretmiyor, aynı zamanda sektör standartlarında en iyi uygulamaları hayata geçirebiliyoruz," yorumunda bulundu. Bu yaklaşım, Innovatex'in "Multi-cloud Orchestrator Development" gibi iddialı bulut projelerinde kendini gösteriyor.`,
+      resimUrl: "https://images.pexels.com/photos/669996/pexels-photo-669996.jpeg?auto=compress&cs=tinysrgb&w=600"
+    },
+    {
+      kupurNo: 3,
+      gazeteAdi: "Kariyer Rotası",
+      tarih: "20 Nisan 2025",
+      sayfa: "1",
+      bolum: "Manşet",
+      baslik: "Boğaziçi ve Koç Mezunu Genç Mühendis: Dört Şirkette Eş Zamanlı Başarı",
+      altBaslik: "\"Agile ve Scrum ile Zamanı Yönetmek Mümkün\": Çoklu Görev Başarısının Sırları",
+      icerik: `Yazılım dünyasının yükselen yıldızlarından, Boğaziçi Bilgisayar Mühendisliği ve Koç Yapay Zekâ Yüksek Lisans mezunu mühendis, kariyerindeki sıra dışı yapıyla dikkat çekiyor. Aynı anda InnovateX, IoT Sensor Hub, ChatAssist ve eski tecrübesi TrendTech gibi önde gelen teknoloji şirketlerine proje bazlı katkılar sunarak adından söz ettiriyor.
+
+Genç mühendis, bu yoğun tempoyu ve yüksek verimliliği nasıl sağladığı sorulduğunda, sırrının net olduğunu belirtti: "Agile ve Scrum metodolojileri."
+
+"Tüm çalışmalarım remote ve proje bazlı. Haftalık 55-60 saatlik programımı, her sprint için net teslimatlar belirleyerek yönetiyorum. Kritik olan; tüm işverenlerimin bu düzeni onaylaması ve benim de Microservices Architecture ile Scalability konularındaki yetkinliğimi kullanarak taahhütlerimi fazlasıyla yerine getirmemdir. Bu sektörde durağanlık gerilemedir; sürekli öğrenme ve teknik okumalarla (Haftada 10+ saat) kendimi güncel tutuyorum."
+
+Mühendisin Innovatex için geliştirdiği "Sanal Asistan Platformu" ve "Bulut Bilişim Altyapısı" projeleri, karmaşık sistemleri yönetme ve ölçeklendirme konusundaki becerisinin somut örnekleri olarak gösteriliyor.`,
+      resimUrl: "https://images.pexels.com/photos/3183150/pexels-photo-3183150.jpeg?auto=compress&cs=tinysrgb&w=600"
+    },
+    {
+      kupurNo: 2,
+      gazeteAdi: "Sanayi ve Şehir",
+      tarih: "03 Aralık 2023",
+      sayfa: "5",
+      bolum: "İnovasyon",
+      baslik: "Endüstri 4.0'da Türk İmzası: IoT Sensor Hub ile Fabrikalar Akıllanıyor",
+      altBaslik: "Sensör Teknolojisi ve YZ Gücüyle Predictive Maintenance Çağı Başladı",
+      icerik: `IoT Sensor Hub projeleri, sanayi ve tarım sektörlerinde dijital dönüşüme öncülük ediyor. Şirket bünyesinde geliştirilen Endüstri 4.0 Monitör sistemi, fabrikalarda otomasyonu ve "predictive maintenance" (öngörücü bakım) süreçlerini yeni bir seviyeye taşıdı. Kritik makine verilerinin gerçek zamanlı analizi sayesinde, beklenmedik arızaların önüne geçilerek milyonlarca liralık kayıp engellendi.
+
+Öte yandan, aynı uzmanlık, "Akıllı Tarım Çözümü" ile tarım arazilerine de taşındı. Toprak nemi ve iklim sensörlerinden toplanan verilerle, çiftçilere en doğru sulama ve gübreleme zamanlamaları sunuluyor.
+
+Bu teknolojik atılımlar, mühendisin "AWS Certified Solutions Architect - Professional" ve "Certified Kubernetes Administrator (CKA)" gibi sertifikasyonlarla pekiştirilmiş Cloud Native ve DevOps uzmanlığının ürünleri olarak görülüyor. TrendTech için geliştirilen Akıllı Şehir Trafik Yönetim Sistemi de, bu altyapısal gücün şehir yönetimindeki başarısını gösteriyor.`,
+      resimUrl: "https://images.pexels.com/photos/373543/pexels-photo-373543.jpeg?auto=compress&cs=tinysrgb&w=600"
+    },
+    {
+      kupurNo: 1,
+      gazeteAdi: "Tekno Vizyon",
+      tarih: "15 Eylül 2024",
+      sayfa: "3",
+      bolum: "Yapay Zekâ Özel",
+      baslik: "ChatAssist'in Çok Dilli Başarısı: 15 Dilde Doğal Konuşma İşleme",
+      altBaslik: "Yerli Mühendislik İle Global Etki: Duygu Analizi Modülü Müşteri Memnuniyetini Uçuruyor!",
+      icerik: `Yapay Zekâ (YZ) alanındaki hızlı ilerlemeler, yerel yeteneklerle global standartları yakalıyor. ChatAssist platformu için geliştirilen, 15 farklı dilde doğal konuşma işleme (NLP) yeteneğine sahip Çok Dilli Chatbot projesi, uluslararası pazarda büyük ilgi uyandırdı.
+
+Projenin arkasındaki genç mühendislik ekibinden gelen bilgilere göre, sadece dil çeşitliliği değil, aynı zamanda projenin Duygu Analizi Modülü de sektörde fark yaratıyor. Bu modül, müşteri etkileşimlerinden elde edilen verilerle "Müşteri memnuniyeti tahmini" yaparak şirketlerin hizmet kalitesini proaktif bir şekilde artırmasına olanak tanıyor.
+
+Projenin Baş Geliştiricisi, bu başarıyı "Dağıtık Sistemler ve MLOps konusundaki yetkinliğimizin somut bir sonucu. Bulut Bilişim Altyapısı ve Semantic Search optimizasyonu ile desteklenen bu modüller, gerçek zamanlı veri işleme yeteneklerimizin gücünü gösteriyor," sözleriyle yorumladı.
+
+ChatAssist'in başarısı, mühendisin sadece teknik yeteneklerini değil, aynı zamanda iş dünyasının ihtiyaçlarını anlama ve bunlara yenilikçi çözümler getirme konusundaki üstün yeteneğini de ortaya koyuyor.`,
+      resimUrl: "https://images.pexels.com/photos/8386440/pexels-photo-8386440.jpeg?auto=compress&cs=tinysrgb&w=600"
+    }];
+
+export const HomePage = () => {
+  return (        
+    <StrictMode>
+      <div className="grid-cols-2">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
+        {haberler.map((haber, index) => (
+          <Haber key={index} {...haber} />
+        ))}
+      </div>  
+    </div>
+    </StrictMode>
+  )
+}
+
+export default HomePage
+
+// === C:/Users/BERAT/Desktop/Portfolyo-main/src/Components\HomePage.tsx ===
+
+import { StrictMode } from "react";
+import { Egitim, type ExperienceItem } from "./Egitim.tsx"
+import {Beceriler} from "./Beceriler.tsx"
+import { Projeler } from "./Projeler.tsx";
+import { SSS, type SSSItem } from "./SSS.tsx";
+import { Alinti} from "./Alinti.tsx";
+import { Vizyon } from "./Vizyon.tsx";
+import {Kimdir} from "./Kimdir.tsx";
+import {Iletisim} from "./Iletisim.tsx";
+import { Card } from "flowbite-react/components/Card";
+import Liste from "./Liste.tsx";
+
+
+
+export const HomePage = () => {
+      const projects = [
+        {
+          image: "src/assets/chatassist_cokdillichatbot.png",
+          title: "ChatAssist - Çok Dilli Chatbot",
+          desc: "15 dilde doğal konuşma işleme"
+        },
+        {
+          image: "src/assets/chatassist_duyguanalizi.png", 
+          title: "ChatAssist - Duygu Analizi Modülü",
+          desc: "Müşteri memnuniyeti tahmini"
+        },
+        {
+          image: "src/assets/chatassist_veritabani.png",
+          title: "ChatAssist - Veri Tabanı Optimizasyonu",
+          desc: "Semantic search improvement"
+        },
+        {
+          image: "src/assets/innovatex_asistan.png", 
+          title: "Innovatex - Sanal Asistan Platformu ",
+          desc: "Doğal dil işleme ile akıllı müşteri hizmetleri"
+        },
+            {
+          image: "src/assets/innovatex_bulut.png",
+          title: "Innovatex - Bulut Bilişim Altyapısı ",
+          desc: "Multi-cloud orchestrator development"
+        },
+        {
+          image: "src/assets/sensorhub_endustri.png", 
+          title: "IOT Sensor Hub - Endüstri 4.0 Monitor",
+          desc: "Fabrika otomasyon ve predictive maintenance"
+        },
+            {
+          image: "src/assets/sensorhub_tarim.png", 
+          title: "IOT Sensor Hub - Akıllı Tarım Çözümü",
+          desc: "Toprak nemi ve iklim sensörü ağı"
+        },
+                {
+          image: "src/assets/trendtech_trafik.png", 
+          title: "TrendTech - Akıllı Şehir Trafik Yönetim Sistemi",
+          desc: "Gerçek zamanlı trafik analizi ve optimizasyonu"
+        },
+      ];
+
+    const Certifications = [
+        "AWS Certified Solutions Architect - Professional",
+        "Certified Kubernetes Administrator (CKA)",
+        "TensorFlow Developer Certified",
+        "Scrum Master Certified (SMC)"
+        ];
+
+    const skillsData = {
+      skills: [
+        { name: "Microservices Architecture Design", rating: 4.9, displayRating: "4.9/5" },
+        { name: "AI Model Deployment & MLOps", rating: 4.8, displayRating: "4.8/5" },
+        { name: "Cloud Native Development (AWS/Azure)", rating: 4.9, displayRating: "4.9/5" },
+        { name: "Distributed Systems & Scalability", rating: 4.7, displayRating: "4.7/5" },
+        { name: "Real-time Data Processing", rating: 4.8, displayRating: "4.8/5" },
+        { name: "DevOps & Kubernetes Orchestration", rating: 4.9, displayRating: "4.9/5" },
+        { name: "Natural Language Processing (NLP)", rating: 4.4, displayRating: "4.4/5" }
+      ],
+    
+    };
+
+    const EducationData: ExperienceItem[] = [
+        { time: "2013–2017", title: "Boğaziçi Üniversitesi, Bilgisayar Mühendisliği – Lisans" },
+        { time: "2018–2020", title: "Koç Üniversitesi, Yapay Zekâ ve Veri Bilimi – Yüksek Lisans" }
+    ];
+
+    const ExperienceData: ExperienceItem[] = [
+        { time: "2020–2022", title: "TrendTech – Yazılım Mühendisi" },
+        { time: "2022-2023", title: "InnovateX – Kıdemli Yazılım Mühendisi" },
+        { time: "2022-Devam Etmekte", title: "IoT Sensor Hub – Backend Developer" },
+        { time: "2024-Devam Etmekte", title: "ChatAssist – AI Developer" }
+        ];
+
+        const Questions: SSSItem[] = [
+        {
+            question: "Yazılım geliştirme sürecinizde hangi metodolojileri kullanıyorsunuz?",
+            answer: "Agile ve Scrum metodolojilerini temel alıyorum. Özellikle iki haftalık sprint'ler, düzenli retrolar ve sürekli entegrasyon yaklaşımıyla çalışıyorum. Mikroservis mimarilerinde Domain-Driven Design (DDD) prensiplerini uyguluyorum."
+        },
+        {
+            question: "Aynı anda birden fazla şirkette nasıl çalışabiliyorsunuz?",
+            answer: "Tüm çalışmalarım remote ve proje bazlı. Zaman yönetimimi Agile metodolojisiyle planlıyorum ve her proje için net deliverable'lar belirliyorum. Haftalık 55-60 saat çalışarak tüm taahhütlerimi yerine getirebiliyorum. Tüm işverenlerim bu düzenimden haberdar ve mutabık."
+        },
+        {
+            question: "Yeni başlayan yazılımcılara ne tavsiye edersiniz?",
+            answer: "Temel programlama prensiplerini iyi öğrenin - dil sadece bir araç. Problem çözme becerilerinizi geliştirin. Open source projelere katkıda bulunarak pratik yapın. Kod review süreçlerine dahil olun ve eleştirilere açık olun. Asla öğrenmeyi bırakmayın - bu sektörde durağanlık gerilemedir. Ve en önemlisi, tutkulu olduğunuz alanları bulun ve onlara odaklanın."
+        },
+        {
+            question: "Teknoloji trendlerini nasıl takip ediyorsunuz?",
+            answer: "Haftada 10+ saat teknik okumaya ayırıyorum. Arxiv.org, Hacker News, ve birkaç seçkin tech blog'unu takip ediyorum. Ayrıca open source projelere katkıda bulunarak ve teknik konferanslara katılarak pratik deneyim kazanıyorum. Her ay en az 2-3 teknik kitap bitirmeye çalışıyorum."
+        },
+        {
+            question: "Favori projeniz hangisi ve neden?",
+            answer: "Kesinlikle ChatAssist için geliştirdiğimiz Duygu Analizi Modülü benim favori projem. Bu proje, teknolojinin insan duygularını anlama ve yanıt verme potansiyelini somut bir şekilde gösterdiği için benim için çok özel."
+        }
+    ];
+
+  return (        
+  <StrictMode>
+        
+        <Kimdir/>
+        <div className="grid lg:grid-cols-3">  
+            <div className="flex stretch">
+                <Card className="bg-gray-200 dark:bg-gray-600">
+                    <Egitim experience={EducationData} maintitle="Eğitim"/>
+                </Card>
+                <Card className="bg-gray-100 dark:bg-gray-700">
+                    <Egitim experience={ExperienceData} maintitle="İş Deneyimi"/>
+                </Card>
+             </div>
+            <div className="lg:col-span-2">
+                <Projeler projects={projects} />
+            </div>
+        </div>
+        <div className="lg:grid grid-cols-3 ">
+            <Vizyon/>
+            <Card className="bg-gray-200 dark:bg-gray-600">
+                <Beceriler skills={skillsData.skills} maintitle="Uzmanlık Alanları" />
+                <div className="mt-6 pt-6 border-t">
+                    <Liste certifications={Certifications} />
+                </div>
+            </Card>
+            <div className="lg:grid grid-rows-2 ">    
+            <Iletisim/>  
+            <Alinti/>
+            </div>
+            <SSS questions={Questions}/>
+        </div>
+        
+     </StrictMode>
+  )
+}
+
+export default HomePage
+
+
+
+// === C:/Users/BERAT/Desktop/Portfolyo-main/src/Components\Iletisim.tsx ===
+
+import { Card, List, ListItem } from "flowbite-react";
+
+export function Iletisim() {
+  return (
+    <Card className="bg-gray-50 dark: dark:bg-gray-700">
+      <h5 className="text-2xl font-bold tracking-tight  text-pink-500 dark:text-pink-500 mb-6 text-center">
+        İletişim
+      </h5>
+      
+      <List unstyled className="space-y-4">
+        <ListItem className="flex items-start space-x-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+          <div className="flex-shrink-0 w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
+            <svg className="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+          </div>
+          <div>
+            <p className="text-sm font-medium text-gray-500 dark:text-gray-400">E-posta</p>
+            <p className="text-lg font-semibold text-gray-900 dark:text-white">deniz.yilmaz@techinnovate.com</p>
+          </div>
+        </ListItem>
+
+        <ListItem className="flex items-start space-x-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+          <div className="flex-shrink-0 w-10 h-10 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center">
+            <svg className="w-5 h-5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+            </svg>
+          </div>
+          <div>
+            <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Telefon</p>
+            <p className="text-lg font-semibold text-gray-900 dark:text-white">+90 (532) 123 45 67</p>
+          </div>
+        </ListItem>
+
+
+        <ListItem className="flex items-start space-x-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+          <div className="flex-shrink-0 w-10 h-10 bg-gray-100 dark:bg-gray-900 rounded-full flex items-center justify-center">
+            <svg className="w-5 h-5 text-gray-600 dark:text-gray-400" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+            </svg>
+          </div>
+          <div>
+            <p className="text-sm font-medium text-gray-500 dark:text-gray-400">GitHub</p>
+            <p className="text-lg font-semibold text-gray-900 dark:text-white">github.com/denizyilmaz-dev</p>
+          </div>
+        </ListItem>
+      </List>
+    </Card>
+  );
+}
+
+export default Iletisim;
+
+// === C:/Users/BERAT/Desktop/Portfolyo-main/src/Components\Layout.tsx ===
+
+
+import Baslik from "./Baslik";
+import { MyNavbar } from "./myNavbar";
+import { Outlet } from "react-router-dom";
+import { SayfaSonu } from "./SayfaSonu";
+
+export const Layout = () => {
+  return (
+    <div className="min-h-screen bg-white">
+      <MyNavbar />
+      <Baslik/>
+      <div className="lg:ml-8 lg:mr-8">
+        <Outlet />
+      </div>
+      <SayfaSonu/>
+    </div>
+  );
+};
+
+// === C:/Users/BERAT/Desktop/Portfolyo-main/src/Components\MainProjePage.tsx ===
+
+import YanBar from "./YanBar"
+
+const MainProjePage = () => {
+  return (
+    <div className="grid grid-rows-3">
+        <div className="row-span-3"><YanBar /></div>
+      
+    </div>
+  )
+}
+export default MainProjePage
+
+
+// === C:/Users/BERAT/Desktop/Portfolyo-main/src/Components\myNavbar.tsx ===
+
+import { Dropdown, DropdownItem } from "flowbite-react";
+import { NavLink } from "react-router-dom";
+
+export const MyNavbar = () => {
+  return (
+    <div className="text-center">
+      <button className="relative inline-flex items-center justify-center p-0.5 mb-2 mt-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-pink-500 to-orange-400 group-hover:from-pink-500 group-hover:to-orange-400 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-pink-200 dark:focus:ring-pink-800">
+        <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-transparent group-hover:dark:bg-transparent">
+          <NavLink to={"/"}>Ana Sayfa</NavLink>
+        </span>
+      </button>
+
+      <button className="relative inline-flex items-center justify-center p-0.5 mb-2 mt-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-pink-500 to-orange-400 group-hover:from-pink-500 group-hover:to-orange-400 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-pink-200 dark:focus:ring-pink-800">
+        <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-transparent group-hover:dark:bg-transparent">
+          <NavLink to={"/haberler"}>Basında Biz</NavLink>
+        </span>
+      </button>
+
+      <Dropdown
+        label={
+          <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-transparent group-hover:dark:bg-transparent">
+            <NavLink to={"/projeler"}>Projeler</NavLink>
+          </span>
+        }
+        dismissOnClick={false}
+        className="relative inline-flex items-center justify-center p-0.5 mb-2 mt-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-pink-500 to-orange-400 group-hover:from-pink-500 group-hover:to-orange-400 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:fuchsia-800 amber-700 dark:focus:ring-pink-800"
+      >
+        <DropdownItem>Dashboard</DropdownItem>
+        <DropdownItem>Settings</DropdownItem>
+        <DropdownItem>Earnings</DropdownItem>
+        <DropdownItem>Sign out</DropdownItem>
+      </Dropdown>
+
+      <button className="relative inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-pink-500 to-orange-400 group-hover:from-pink-500 group-hover:to-orange-400 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-pink-200 dark:focus:ring-pink-800">
+        <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-transparent group-hover:dark:bg-transparent">
+          Pink to orange
+        </span>
+      </button>
+
+      <button className="relative inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-pink-500 to-orange-400 group-hover:from-pink-500 group-hover:to-orange-400 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-pink-200 dark:focus:ring-pink-800">
+        <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-transparent group-hover:dark:bg-transparent">
+          Pink to orange
+        </span>
+      </button>
+    </div>
+  );
+};
+
+// === C:/Users/BERAT/Desktop/Portfolyo-main/src/Components\PageNotFound.tsx ===
+
+import { Link } from "react-router-dom";
+import { Avatar, Blockquote, Button, Modal, ModalBody, ModalFooter, ModalHeader } from "flowbite-react";
+import { useState } from "react";
+
+
+export const PageNotFound = () => {
+  const [openModal, setOpenModal] = useState(true);
+  return (
+    <>
+      <Modal show={openModal} onClose={() => setOpenModal(false)}>
+        <ModalHeader className="text-center">404 SAYFA BULUNAMADI</ModalHeader>
+        <ModalBody>
+          <div className="space-y-6">
+            <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
+                
+                    <figure className="mx-auto max-w-screen-md text-center">
+                      <svg
+                        className="mx-auto mb-3 h-10 w-10 text-gray-400 dark:text-gray-600"
+                        aria-hidden="true"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="currentColor"
+                        viewBox="0 0 18 14"
+                      >
+                        <path d="M6 0H2a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h4v1a3 3 0 0 1-3 3H2a1 1 0 0 0 0 2h1a5.006 5.006 0 0 0 5-5V2a2 2 0 0 0-2-2Zm10 0h-4a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h4v1a3 3 0 0 1-3 3h-1a1 1 0 0 0 0 2h1a5.006 5.006 0 0 0 5-5V2a2 2 0 0 0-2-2Z" />
+                      </svg>
+                      <Blockquote>
+                        <p className="text-2xl font-medium italic text-gray-900 dark:text-white">
+                            “2b||(!2b)”
+                        </p>
+                
+                      </Blockquote>
+
+                    </figure>
+            </p>
+          </div>
+        </ModalBody>
+        <ModalFooter>
+          <Button color="alternative" onClick={() => setOpenModal(false)}>
+            <Link to={"/"}>Anasayfaya Dön</Link>
+          </Button>
+        </ModalFooter>
+      </Modal>
+    </>
+  );
+}
+
+
+
+
+// === C:/Users/BERAT/Desktop/Portfolyo-main/src/Components\Projeler.tsx ===
+
+
+import { Carousel } from "flowbite-react";
+import { Card } from "flowbite-react";
+
+interface Project {
+  image: string;
+  title: string;
+  desc: string;
+}
+
+interface ProjelerProps {
+  projects: Project[];
+}
+
+export function Projeler(props:ProjelerProps) {
+  const {projects} = props
+
+  return (
+      <Card dark:bg-gray-900>
+        <h5 className="text-2xl text-center font-bold tracking-tight text-pink-500 dark:text-pink-500">
+          Dahil Olduğu Projeler:
+        </h5>
+
+        <Carousel className="aspect-auto sm:aspect-[4/3] xl:aspect-[16/9]"         
+        leftControl={
+          <button className="absolute left-2 top-1/2 transform -translate-y-1/2 z-10 bg-pink-500 dark:bg-pink-500 hover:bg-white dark:hover:bg-gray-700 rounded-full p-2 shadow-lg transition-all duration-200">
+            <svg className="w-6 h-6 text-gray-800 dark:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+        }
+        rightControl={
+          <button className="absolute right-2 top-1/2 transform -translate-y-1/2 z-10 bg-pink-500 dark:bg-pink-500 hover:bg-white dark:hover:bg-gray-700 rounded-full p-2 shadow-lg transition-all duration-200">
+            <svg className="w-6 h-6 text-gray-800 dark:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        }
+        indicators={false}>
+          {projects.map((project, index) => (
+            <div key={index} className="relative h-full w-full flex justify-center items-center">
+              <img src={project.image} alt={project.title}/>
+              <div className="absolute bottom-7 left-10 right-10 bg-none text-center  ">
+                <h3 className="text-pink-500 bg-gray-200 dark:bg-gray-600 lg:text-5xl font-mono">{project.title}</h3>
+
+              </div>
+            </div>
+          ))}
+        </Carousel>
+      </Card>
+  );
+}
+
+
+// === C:/Users/BERAT/Desktop/Portfolyo-main/src/Components\SayfaSonu.tsx ===
+
+import {FooterCopyright } from "flowbite-react";
+
+export function SayfaSonu() {
+  return (
+        <header className="relative gradient-background">
+      {
+    }
+      <style>
+        {`
+          .gradient-background {
+            background: linear-gradient(300deg, #00bfff, #ff4c68, #ef8172);
+            background-size: 180% 180%;
+            animation: gradient-animation 18s ease infinite;
+          }
+
+          @keyframes gradient-animation {
+            0% {
+              background-position: 0% 50%;
+            }
+            50% {
+              background-position: 100% 50%;
+            }
+            100% {
+              background-position: 0% 50%;
+            }
+          }
+        `}
+      </style>
+        <div
+              className="relative h-28 bg-center bg-cover">
+              <div className="absolute inset-0 bg-opacity-60 flex justify-center items-center">
+                  <div className="flex flex-wrap justify-center items-center">
+                <FooterCopyright href="#" by="DENİZ YILMAZ" year={2025} />
+            </div>
+          </div>
+        </div>
+      </header>
+  );
+}
+
+// === C:/Users/BERAT/Desktop/Portfolyo-main/src/Components\ShowProfile.tsx ===
+
+import { Navigate, useParams } from "react-router-dom";
+import { isDigit } from "../helper/helper";
+
+export const ShowProfile = () => {
+  const { profileId } = useParams();
+  if (isDigit(profileId!) && Number(profileId) <= 5)
+    return <div>Profile {profileId}</div>;
+  else return <Navigate to={"/"} />;
+};
+
+
+// === C:/Users/BERAT/Desktop/Portfolyo-main/src/Components\SSS.tsx ===
+
+import { Card } from "flowbite-react";
+import { Accordion, AccordionContent, AccordionPanel, AccordionTitle } from "flowbite-react";
+
+export interface SSSItem {
+  question: string;
+  answer: string;
+}
+
+export interface SSSProps {
+  questions: SSSItem[];
+  title?: string;
+}
+
+export function SSS(props: SSSProps) {
+  const { questions, title = "Sık Sorulan Sorular" } = props;
+
+  return (
+    <Card className="col-span-3">
+      <h5 className="text-2xl font-bold tracking-tight text-pink-500 dark:text-pink-500">
+        {title}
+      </h5>
+      <Accordion>
+        {questions.map((item, index) => (
+          <AccordionPanel key={index}>
+            <AccordionTitle>{item.question}</AccordionTitle>
+            <AccordionContent>
+              <p className="text-gray-500 dark:text-gray-400">
+                {item.answer}
+              </p>
+            </AccordionContent>
+          </AccordionPanel>
+        ))}
+      </Accordion>
+    </Card>
+  );
+}
+
+
+
+
+// === C:/Users/BERAT/Desktop/Portfolyo-main/src/Components\Vizyon.tsx ===
+
+import { Card } from "flowbite-react";
+
+export function Vizyon() {
+  return (
+    <Card>
+            <h5 className="text-2xl font-bold tracking-tight  text-pink-500 dark:text-pink-500">
+        Vizyon:
+      </h5>
+  <p className="text-lg leading-relaxed dark:text-white">
+                <strong>Teknolojinin insan hayatını iyileştirme potansiyelini en üst düzeye çıkarmak</strong> için, 
+                yapay zekâ ve yazılım mühendisliği alanındaki uzmanlığımı kullanarak, kullanıcı odaklı, 
+                ölçeklenebilir ve etik çözümler geliştirmek. Her projede anlamlı etkiler yaratmak ve 
+                teknolojiyi insanlığın hizmetine sunmak.
+              </p>
+              <div className="text-center">
+            <img src="/src/assets/kodlama.png" width="300px" alt="Kodlama" className="inline-block rounded-full" />
+            </div>
+                    <h5 className="text-2xl font-bold tracking-tight  text-pink-500 dark:text-pink-500 " >
+        Misyon:
+      </h5 >
+       <p className="text-lg leading-relaxed dark:text-white">
+            <strong className="dark:text-white">Yapay zekânın insan yeteneklerini tamamladığı değil, insan potansiyelini özgürleştirdiği bir gelecek inşa etmek.</strong> 
+                Teknolojinin dil, kültür ve yetenek engellerini ortadan kaldırdığı, her bireyin kişiselleştirilmiş 
+                çözümlerle güçlendiği daha kapsayıcı ve erişilebilir bir dünya için çalışmak.
+        </p>
+    </Card>
+  );
+}
+
+// === C:/Users/BERAT/Desktop/Portfolyo-main/src/Components\YanBar.tsx ===
+
+import { Sidebar, SidebarItem, SidebarItemGroup, SidebarItems, SidebarLogo } from "flowbite-react";
+import { HiArrowSmRight, HiChartPie, HiInbox, HiShoppingBag, HiTable, HiUser, HiViewBoards } from "react-icons/hi";
+"use client";
+
+export function YanBar() {
+  return (
+    <Sidebar aria-label="Sidebar with logo branding example">
+      <SidebarLogo href="#" img="/favicon.svg" imgAlt="Flowbite logo">
+        Flowbite
+      </SidebarLogo>
+      <SidebarItems>
+        <SidebarItemGroup>
+          <SidebarItem href="#" icon={HiChartPie}>
+            Dashboard
+          </SidebarItem>
+          <SidebarItem href="#" icon={HiViewBoards}>
+            Kanban
+          </SidebarItem>
+          <SidebarItem href="#" icon={HiInbox}>
+            Inbox
+          </SidebarItem>
+          <SidebarItem href="#" icon={HiUser}>
+            Users
+          </SidebarItem>
+          <SidebarItem href="#" icon={HiShoppingBag}>
+            Products
+          </SidebarItem>
+          <SidebarItem href="#" icon={HiArrowSmRight}>
+            Sign In
+          </SidebarItem>
+          <SidebarItem href="#" icon={HiTable}>
+            Sign Up
+          </SidebarItem>
+        </SidebarItemGroup>
+      </SidebarItems>
+    </Sidebar>
+  );
+}
+
+
+
+export default YanBar
